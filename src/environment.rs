@@ -1,4 +1,4 @@
-use super::chromosome::{Chromosome, Crossover, Gene};
+use super::chromosome::{Chromosome, Crossover};
 use super::individual::Individual;
 use super::target::TargetImage;
 
@@ -7,7 +7,6 @@ use std::f32;
 use std::fmt::{Debug, Error as FmtError, Formatter, Result};
 
 use image::{open, ImageFormat, RgbImage};
-use rand::Rng;
 
 type Population = BinaryHeap<Individual>;
 
@@ -31,15 +30,7 @@ impl Environment {
 
         let initial_population = (0..population_size)
             .map(|_| {
-                let chromosome = (0..pixels_len)
-                    .map(|_| {
-                        let mut rng = rand::thread_rng();
-                        rng.gen_range(0..=255)
-                    })
-                    .collect::<Vec<Gene>>();
-                let mutation_rate = 0.02;
-
-                let makeup = Chromosome::new(chromosome, mutation_rate);
+                let makeup = Chromosome::new(pixels_len, 0.2);
                 let fitness = target.fitness(&makeup);
 
                 Individual::new(makeup, fitness, 0)
@@ -84,8 +75,8 @@ impl Environment {
         if self.grow_population {
             next_capacity += self.increase_capacity()
         };
-        self.time += 1;
 
+        self.time += 1;
         self.increase_population(next_capacity);
     }
 }

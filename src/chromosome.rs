@@ -15,7 +15,13 @@ trait Mutation {
 pub struct Chromosome(pub Vec<Gene>, pub MutationRate);
 
 impl Chromosome {
-    pub fn new(chromosome: Vec<Gene>, mutation_rate: MutationRate) -> Self {
+    pub fn new(length: usize, mutation_rate: MutationRate) -> Self {
+        let chromosome = (0..length)
+            .map(|_| {
+                let mut rng = rand::thread_rng();
+                rng.gen_range(0..=255)
+            })
+            .collect::<Vec<Gene>>();
         let mut individual = Chromosome(chromosome, mutation_rate);
         individual.mutate();
 
@@ -106,6 +112,6 @@ impl Crossover for Chromosome {
             _ => self.singlepoint_crossover(partner),
         };
 
-        Chromosome::new(crossover, self.1 * 0.99995)
+        Chromosome(crossover, self.1 * 0.99995)
     }
 }
